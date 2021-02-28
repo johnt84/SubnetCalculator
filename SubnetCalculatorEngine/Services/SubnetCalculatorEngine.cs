@@ -98,7 +98,10 @@ namespace SubnetCalculatorEngine.Services
             string IPAddress = splitIPAddress[0];
             int netMask = Convert.ToInt32(splitIPAddress[1]);
 
-            int extraBitsForNetworkMask = GetNumberOfExtraBitsForNetwork(subnetCalculatorInput.NumberOfNetworks);
+            int extraBitsForNetworkMask = BitsCalculatorTableList()
+                                            .Where(x => x.Networks > subnetCalculatorInput.NumberOfNetworks)
+                                            .Select(x => x.Bits)
+                                            .FirstOrDefault(); 
 
             string IPAddressInBinary = ConvertIPAddressToBinary(IPAddress);
             string IPAddressWithMask = GetIPAddressWithMask(IPAddress, netMask);
@@ -379,16 +382,6 @@ namespace SubnetCalculatorEngine.Services
             }
 
             return string.Join("", binaryAddressBits);
-        }
-
-        private int GetNumberOfExtraBitsForNetwork(int numberOfNetworks)
-        {
-
-
-            return BitsCalculatorTableList()
-                    .Where(x => x.Networks > numberOfNetworks)
-                    .Select(x => x.Bits)
-                    .FirstOrDefault();
         }
 
         private int[] GetBinaryToDecimalConversion(int decimalValue = 128)
