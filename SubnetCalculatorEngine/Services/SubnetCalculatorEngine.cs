@@ -7,7 +7,86 @@ namespace SubnetCalculatorEngine.Services
 {
     public class SubnetCalculatorEngine
     {
+        private const int NO_OF_OCTETS = 4;
+        private const int NO_OF_BITS_IN_IP_ADDRESS = 32;
+
+    private bool IsLastOctet(int octetIndex) => octetIndex == NO_OF_OCTETS - 1;
+        private string AddDotInBetweenOctets(int octetIndex) => !IsLastOctet(octetIndex) ? "." : string.Empty;
         private string GetIPAddressWithMask(string IPAddress, int mask) => $"{IPAddress}/{mask}";
+        private string GetBroadcastBit(bool isBroadcastBit) => isBroadcastBit ? "1" : "0";
+        private int CalculateNoOfHostBits(int mask) => NO_OF_BITS_IN_IP_ADDRESS - mask;
+        private int[] GetBinaryToDecimalConversionForOctet() => new int[]{
+                                                                1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1 };
+
+        private List<BitsCalculatorTable> BitsCalculatorTableList() => new List<BitsCalculatorTable>()
+            { 
+                new BitsCalculatorTable()
+                {
+                    Bits = 0,
+                    Networks = 1,
+                    Hosts = 0,
+                },
+                new BitsCalculatorTable()
+                {
+                    Bits = 1,
+                    Networks = 2,
+                    Hosts = 0,
+                },
+                new BitsCalculatorTable()
+                {
+                    Bits = 2,
+                    Networks = 4,
+                    Hosts = 2,
+                },
+                new BitsCalculatorTable()
+                {
+                    Bits = 3,
+                    Networks = 8,
+                    Hosts = 6,
+                },
+                new BitsCalculatorTable()
+                {
+                    Bits = 4,
+                    Networks = 16,
+                    Hosts = 14,
+                },
+                new BitsCalculatorTable()
+                {
+                    Bits = 5,
+                    Networks = 32,
+                    Hosts = 30,
+                },
+                new BitsCalculatorTable()
+                {
+                    Bits = 6,
+                    Networks = 64,
+                    Hosts = 62,
+                },
+                new BitsCalculatorTable()
+                {
+                    Bits = 7,
+                    Networks = 128,
+                    Hosts = 126,
+                },
+                new BitsCalculatorTable()
+                {
+                    Bits = 8,
+                    Networks = 256,
+                    Hosts = 254,
+                },
+                new BitsCalculatorTable()
+                {
+                    Bits = 9,
+                    Networks = 512,
+                    Hosts = 510,
+                },
+                new BitsCalculatorTable()
+                {
+                    Bits = 10,
+                    Networks = 1024,
+                    Hosts = 1020,
+                },
+            };
 
         public SubnetCalculatorResult CalculateSubnet(SubnetCalculatorInput subnetCalculatorInput)
         {
@@ -158,8 +237,6 @@ namespace SubnetCalculatorEngine.Services
 
             string IPAddress = string.Empty;
 
-            var lastIPAddressOctet = IPAddressOctets.Last();
-
             int octetIndex = 0;
 
             foreach (var IPAddressOctet in IPAddressOctets)
@@ -174,7 +251,9 @@ namespace SubnetCalculatorEngine.Services
                 }
 
                 IPAddress += octetCalculation.ToString();
-                IPAddress += octetIndex < 3 ? "." : string.Empty;
+
+                //ensure we only add the dot after the first 3 octets
+                IPAddress += AddDotInBetweenOctets(octetIndex);
 
                 octetIndex++;
             }
@@ -184,13 +263,11 @@ namespace SubnetCalculatorEngine.Services
 
         private string ConvertIPAddressToBinary(string IPAddress)
         {
-            var binaryToDecimalConversionForOctet = GetBinaryToDecimalConversion();
-
             var IPAddressOctets = SplitIPAddressIntoOctets(IPAddress);
 
             string IPAddressInBinary = string.Empty;
 
-            var lastIPAddressOctet = IPAddressOctets.Last();
+            int octetIndex = 0;
 
             foreach (var IPAddressOctet in IPAddressOctets)
             {
@@ -198,7 +275,10 @@ namespace SubnetCalculatorEngine.Services
 
                 IPAddressInBinary += CalculateIPOctetInBinary(IPAddressOctet);
 
-                IPAddressInBinary += IPAddressOctet != lastIPAddressOctet ? "." : string.Empty;
+                //ensure we only add the dot after the first 3 octets
+                IPAddressInBinary += AddDotInBetweenOctets(octetIndex);
+
+                octetIndex++;
             }
 
             return IPAddressInBinary;
@@ -213,7 +293,7 @@ namespace SubnetCalculatorEngine.Services
 
             for (int i = 0; i < hostBits; i++)
             {
-                IPAddressNetwork += isBroadcast ? "1" : "0";
+                IPAddressNetwork += GetBroadcastBit(isBroadcast);
             }
 
             var IPAddressNetworkBits = new List<string>();
@@ -225,7 +305,10 @@ namespace SubnetCalculatorEngine.Services
 
                 int theBitIndex = bitIndex + 1;
                 bool isLastItem = theBitIndex == IPAddressNetwork.Length;
-                if (theBitIndex % 8 == 0 && !isLastItem)
+
+                //Add dot after each octet apart from the last
+                bool endOfOctet = theBitIndex % 8 == 0;
+                if (endOfOctet && !isLastItem)
                 {
                     IPAddressNetworkBits.Add(".");
                 }
@@ -243,14 +326,14 @@ namespace SubnetCalculatorEngine.Services
 
             for (int i = 0; i < noOfNetworkBits; i++)
             {
-                IPAddressNetwork += isBroadcast ? "1" : "0";
+                IPAddressNetwork += GetBroadcastBit(isBroadcast);
             }
 
-            int hostBits = 32 - IPAddressNetwork.Length;
+            int hostBits = NO_OF_BITS_IN_IP_ADDRESS - IPAddressNetwork.Length;
 
             for (int i = 0; i < hostBits; i++)
             {
-                IPAddressNetwork += isBroadcast ? "1" : "0";
+                IPAddressNetwork += GetBroadcastBit(isBroadcast);
             }
 
             return AddDotsToBinaryAddress(IPAddressNetwork);
@@ -265,7 +348,7 @@ namespace SubnetCalculatorEngine.Services
 
             string IPAddress = IPAddressNetwork + networkBinary;
 
-            int remainingBits = 32 - IPAddress.Length;
+            int remainingBits = NO_OF_BITS_IN_IP_ADDRESS - IPAddress.Length;
 
             for(int i= 0; i < remainingBits; i++)
             {
@@ -273,13 +356,6 @@ namespace SubnetCalculatorEngine.Services
             }
 
             return AddDotsToBinaryAddress(IPAddress);
-        }
-
-        private int CalculateNoOfHostBits(int mask)
-        {
-            int noOfBitsInIPAddress = 32;
-
-            return noOfBitsInIPAddress - mask;
         }
 
         private string AddDotsToBinaryAddress(string binaryAddress)
@@ -291,9 +367,10 @@ namespace SubnetCalculatorEngine.Services
             {
                 binaryAddressBits.Add(bit.ToString());
 
-                int theBitIndex = bitIndex + 1;
-                bool isLastItem = theBitIndex == binaryAddress.Length;
-                if (theBitIndex % 8 == 0 && !isLastItem)
+                int bitPosition = bitIndex + 1;
+                bool isLastItem = bitPosition == binaryAddress.Length;
+                bool endsOctet = bitPosition % 8 == 0;
+                if (endsOctet && !isLastItem)
                 {
                     binaryAddressBits.Add(".");
                 }
@@ -306,77 +383,9 @@ namespace SubnetCalculatorEngine.Services
 
         private int GetNumberOfExtraBitsForNetwork(int numberOfNetworks)
         {
-            var bitsCalculatorTableList = new List<BitsCalculatorTable>()
-            {
-                new BitsCalculatorTable()
-                {
-                    Bits = 0,
-                    Networks = 1,
-                    Hosts = 0,
-                },
-                new BitsCalculatorTable()
-                {
-                    Bits = 1,
-                    Networks = 2,
-                    Hosts = 0,
-                },
-                new BitsCalculatorTable()
-                {
-                    Bits = 2,
-                    Networks = 4,
-                    Hosts = 2,
-                },
-                new BitsCalculatorTable()
-                {
-                    Bits = 3,
-                    Networks = 8,
-                    Hosts = 6,
-                },
-                new BitsCalculatorTable()
-                {
-                    Bits = 4,
-                    Networks = 16,
-                    Hosts = 14,
-                },
-                new BitsCalculatorTable()
-                {
-                    Bits = 5,
-                    Networks = 32,
-                    Hosts = 30,
-                },
-                new BitsCalculatorTable()
-                {
-                    Bits = 6,
-                    Networks = 64,
-                    Hosts = 62,
-                },
-                new BitsCalculatorTable()
-                {
-                    Bits = 7,
-                    Networks = 128,
-                    Hosts = 126,
-                },
-                new BitsCalculatorTable()
-                {
-                    Bits = 8,
-                    Networks = 256,
-                    Hosts = 254,
-                },
-                new BitsCalculatorTable()
-                {
-                    Bits = 9,
-                    Networks = 512,
-                    Hosts = 510,
-                },
-                new BitsCalculatorTable()
-                {
-                    Bits = 10,
-                    Networks = 1024,
-                    Hosts = 1020,
-                },
-            };
 
-            return bitsCalculatorTableList
+
+            return BitsCalculatorTableList()
                     .Where(x => x.Networks > numberOfNetworks)
                     .Select(x => x.Bits)
                     .FirstOrDefault();
@@ -390,20 +399,6 @@ namespace SubnetCalculatorEngine.Services
                     .ToList()
                     .Where(x => decimalValue >= x)
                     .ToArray();
-        }
-
-        private int[] GetBinaryToDecimalConversionForOctet()
-        {
-            return new int[]{
-                1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1,
-            };
-        }
-
-        private string GetDotInIPAddress(int index)
-        {
-            int hostIndex = index + 1;
-            int noOfBitsInOctet = 8;
-            return hostIndex % noOfBitsInOctet == 0 ? "." : string.Empty;
         }
 
         private string CalculateIPOctetInBinary(string IPAddressOctet, int numberOfBits = 8)
