@@ -12,12 +12,16 @@
         public string NetworkIPAddress { get; set; }
         public string BroadcastAddressInBinary { get; set; }
         public string BroadcastIPAddress { get; set; }
+        public double TotalNumberOfHosts { get; set; }
+        public double NumberOfUsableHosts { get; set; }
         public string NetworkSubnetMaskInBinary { get; set; }
         public string NetworkSubnetMaskIPAddress { get; set; }
         public string NetworkWithNetworkMaskAddressInBinary { get; set; }
         public string NetworkWithNetworkMaskIPAddress { get; set; }
         public string BroadcastWithNetworkMaskAddressInBinary { get; set; }
         public string BroadcastWithNetworkMaskIPAddress { get; set; }
+        public double TotalNumberOfHostsWithNetworkMask { get; set; }
+        public double NumberOfUsableHostsWithNetworkMask { get; set; }
         public string Network5IPAddressInBinary { get; set; }
         public string Network5IPAddress { get; set; }
         public string Network22IPAddressInBinary { get; set; }

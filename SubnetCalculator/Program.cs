@@ -27,8 +27,8 @@ namespace SubnetCalculator
 
             var subnetCalculatorInput = new SubnetCalculatorInput()
             {
-                IPAddress = "192.168.224.0/21",
-                NumberOfNetworks = 50,
+                IPAddress = "10.0.48.0/24",//"192.168.224.0/21",
+                NumberOfNetworks = 63, //512
             };
 
             var subnetCalculator = new SubnetCalculatorEngine.Services.SubnetCalculatorEngine();
@@ -50,6 +50,8 @@ namespace SubnetCalculator
             Console.WriteLine($"Network IP Address: {subnetCalculatorResult.NetworkIPAddress}");
             Console.WriteLine($"\nBroadcast address in binary: {subnetCalculatorResult.BroadcastAddressInBinary}");
             Console.WriteLine($"Broadcast IP Address: {subnetCalculatorResult.BroadcastIPAddress}");
+            Console.WriteLine($"\nTotal Number of hosts: {subnetCalculatorResult.TotalNumberOfHosts}");
+            Console.WriteLine($"Number of usable hosts: {subnetCalculatorResult.NumberOfUsableHosts}");
 
             Console.WriteLine($"\nSubnet mask with networks address in binary: {subnetCalculatorResult.NetworkSubnetMaskInBinary}");
             Console.WriteLine($"Subnet mask with networks IP Address: {subnetCalculatorResult.NetworkSubnetMaskIPAddress}");
@@ -57,6 +59,8 @@ namespace SubnetCalculator
             Console.WriteLine($"Network with network mask IP Address: {subnetCalculatorResult.NetworkWithNetworkMaskIPAddress}");
             Console.WriteLine($"\nBroadcast with network mask address in binary: {subnetCalculatorResult.BroadcastWithNetworkMaskAddressInBinary}");
             Console.WriteLine($"Broadcast with network mask IP Address: {subnetCalculatorResult.BroadcastWithNetworkMaskIPAddress}");
+            Console.WriteLine($"\nTotal Number of hosts: {subnetCalculatorResult.TotalNumberOfHostsWithNetworkMask}");
+            Console.WriteLine($"Number of usable hosts: {subnetCalculatorResult.NumberOfUsableHostsWithNetworkMask}");
 
             Console.WriteLine($"\nNetwork 5 address in binary: {subnetCalculatorResult.Network5IPAddressInBinary}");
             Console.WriteLine($"Network 5 IP Address: {subnetCalculatorResult.Network5IPAddress}");

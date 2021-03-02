@@ -9,6 +9,7 @@ namespace SubnetCalculatorEngine.Services
     {
         private const int NO_OF_OCTETS = 4;
         private const int NO_OF_BITS_IN_IP_ADDRESS = 32;
+        private const int NO_OF_RESERVED_HOSTS = 2;
 
     private bool IsLastOctet(int octetIndex) => octetIndex == NO_OF_OCTETS - 1;
         private string AddDotInBetweenOctets(int octetIndex) => !IsLastOctet(octetIndex) ? "." : string.Empty;
@@ -17,6 +18,7 @@ namespace SubnetCalculatorEngine.Services
         private int CalculateNoOfHostBits(int mask) => NO_OF_BITS_IN_IP_ADDRESS - mask;
         private int[] GetBinaryToDecimalConversionForOctet() => new int[]{
                                                                 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1 };
+        private int NumberOfRemainingBits(int netMask) => NO_OF_BITS_IN_IP_ADDRESS - netMask;
 
         private List<BitsCalculatorTable> BitsCalculatorTableList() => new List<BitsCalculatorTable>()
             { 
@@ -99,7 +101,7 @@ namespace SubnetCalculatorEngine.Services
             int netMask = Convert.ToInt32(splitIPAddress[1]);
 
             int extraBitsForNetworkMask = BitsCalculatorTableList()
-                                            .Where(x => x.Networks > subnetCalculatorInput.NumberOfNetworks)
+                                            .Where(x => x.Networks > subnetCalculatorInput.NumberOfNetworks && x.Bits <= NumberOfRemainingBits(netMask))
                                             .Select(x => x.Bits)
                                             .FirstOrDefault(); 
 
@@ -118,6 +120,12 @@ namespace SubnetCalculatorEngine.Services
             string broadcastIPAddress = ConvertBinaryToIPAdress(broadcastAddressInBinary);
             string broadcastIPAddressWithMask = GetIPAddressWithMask(broadcastIPAddress, netMask);
 
+            double totalNumberOfHosts = Math.Pow(2, NumberOfRemainingBits(netMask)); //2 to the power of 
+
+            double numberOfUsableHosts = totalNumberOfHosts > 1
+                                        ? totalNumberOfHosts - NO_OF_RESERVED_HOSTS
+                                        : 0;
+
             int networkMask = netMask + extraBitsForNetworkMask;
 
             string networkSubnetMaskInBinary = CalculateSubNetBinaryMask(networkMask);
@@ -131,6 +139,12 @@ namespace SubnetCalculatorEngine.Services
             string broadcastWithNetworkMaskAddressInBinary = GetIPAddressInBinaryUsingMaskAndNetworkMask(IPAddressInBinary, netMask, extraBitsForNetworkMask, true);
             string broadcastWithNetworkMaskIPAddress = ConvertBinaryToIPAdress(broadcastWithNetworkMaskAddressInBinary);
             string broadcastWithNetworkMaskIPAddressWithMask = GetIPAddressWithMask(broadcastWithNetworkMaskIPAddress, networkMask);
+
+            double totalNumberOfHostsWithMask = Math.Pow(2, NumberOfRemainingBits(networkMask)); //2 to the power of 
+
+            double numberOfUsableHostsWithMask = totalNumberOfHostsWithMask > 1 
+                                                    ? totalNumberOfHostsWithMask - NO_OF_RESERVED_HOSTS 
+                                                    : 0;
 
             string N2NetworkMaskAddressInBinary = CalculateNetworkIPAddressInBinaryUsingNetworkMask(IPAddressInBinary, netMask, extraBitsForNetworkMask, 2);
             string N2NetworkMaskIPAddress = ConvertBinaryToIPAdress(N2NetworkMaskAddressInBinary);
@@ -200,12 +214,16 @@ namespace SubnetCalculatorEngine.Services
                 NetworkIPAddress = networkIPAddressWithMask,
                 BroadcastAddressInBinary = broadcastAddressInBinary,
                 BroadcastIPAddress = broadcastIPAddressWithMask,
+                TotalNumberOfHosts = totalNumberOfHosts,
+                NumberOfUsableHosts = numberOfUsableHosts,
                 NetworkSubnetMaskInBinary = networkSubnetMaskInBinary,
                 NetworkSubnetMaskIPAddress = networkSubnetMaskIPAddressWithMask,
                 NetworkWithNetworkMaskAddressInBinary = networkAddressWithNetworkMaskInBinary,
                 NetworkWithNetworkMaskIPAddress = networkWithNetworkMaskIPAddressWithMask,
                 BroadcastWithNetworkMaskAddressInBinary = broadcastWithNetworkMaskAddressInBinary,
                 BroadcastWithNetworkMaskIPAddress = broadcastWithNetworkMaskIPAddressWithMask,
+                TotalNumberOfHostsWithNetworkMask = totalNumberOfHostsWithMask,
+                NumberOfUsableHostsWithNetworkMask = numberOfUsableHostsWithMask,
                 Network5IPAddressInBinary = N5NetworkMaskAddressInBinary,
                 Network5IPAddress = N5NetworkMaskIPAddressWithMask,
                 Network22IPAddressInBinary = N5NetworkMaskAddressInBinary,
