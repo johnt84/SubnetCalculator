@@ -28,7 +28,7 @@ namespace SubnetCalculator
             var subnetCalculatorInput = new SubnetCalculatorInput()
             {
                 IPAddress = "10.0.50.0/24",//"192.168.224.0/21",
-                NumberOfNetworks = 11, //512
+                NumberOfNetworks = 11, //512 //Example from https://app.pluralsight.com/course-player?clipId=67cc4d0a-7ddf-46f3-86ee-2fb6efc55e9d
             };
 
             var subnetCalculator = new SubnetCalculatorEngine.Services.SubnetCalculatorEngine();
