@@ -43,6 +43,7 @@ namespace SubnetCalculator
             Console.WriteLine("\nSubnetting Results");
 
             Console.WriteLine($"\nNumber of extra bits required: {subnetCalculatorResult.NumberOfExtraBitsRequired}");
+            Console.WriteLine($"\nNumber of networks provided: {subnetCalculatorResult.NumberOfNetworksProvided}");
             Console.WriteLine($"\nIP address in binary: {subnetCalculatorResult.IPAddressInBinary}");
             Console.WriteLine($"\nSubnet mask in binary: {subnetCalculatorResult.SubnetMaskInBinary}");
             Console.WriteLine($"Subnet mask IP Address: {subnetCalculatorResult.SubnetMaskIPAddress}");

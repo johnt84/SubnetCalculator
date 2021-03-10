@@ -164,6 +164,7 @@ namespace SubnetCalculatorEngine.Services
             return new SubnetCalculatorResult()
             {
                 NumberOfExtraBitsRequired = bitsCalculatorTableRecord.Bits,
+                NumberOfNetworksProvided = bitsCalculatorTableRecord.Networks,
                 IPAddress = IPAddress,
                 IPAddressInBinary = IPAddressInBinary,
                 NetMask = netMask,
@@ -473,7 +474,9 @@ namespace SubnetCalculatorEngine.Services
 
                 string theBroadcastIPAddress = string.Empty;
 
-                if(x < bitsCalculatorTableRecord.Networks - 1)
+                bool isLastNetwork = x == bitsCalculatorTableRecord.Networks - 1;
+
+                if (!isLastNetwork)
                 {
                     string nextNetworkIPAddressInBinary = CalculateNetworkIPAddressInBinaryUsingNetworkMask(IPAddressInBinary, netMask, bitsCalculatorTableRecord.Bits, networkNumber + 1);
                     string nextNetworkIPAddress = ConvertBinaryToIPAdress(nextNetworkIPAddressInBinary);

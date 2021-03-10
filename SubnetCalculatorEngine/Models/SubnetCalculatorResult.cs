@@ -5,6 +5,7 @@ namespace SubnetCalculatorEngine.Models
     public class SubnetCalculatorResult
     {
         public int NumberOfExtraBitsRequired { get; set; }
+        public int NumberOfNetworksProvided { get; set; }
         public string IPAddress { get; set; }
         public string IPAddressInBinary { get; set; }
         public int NetMask { get; set; }
