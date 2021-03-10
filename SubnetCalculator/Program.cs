@@ -27,8 +27,8 @@ namespace SubnetCalculator
 
             var subnetCalculatorInput = new SubnetCalculatorInput()
             {
-                IPAddress = "10.0.48.0/24",//"192.168.224.0/21",
-                NumberOfNetworks = 63, //512
+                IPAddress = "10.0.50.0/24",//"192.168.224.0/21",
+                NumberOfNetworks = 11, //512
             };
 
             var subnetCalculator = new SubnetCalculatorEngine.Services.SubnetCalculatorEngine();
@@ -50,8 +50,10 @@ namespace SubnetCalculator
             Console.WriteLine($"Network IP Address: {subnetCalculatorResult.NetworkIPAddress}");
             Console.WriteLine($"\nBroadcast address in binary: {subnetCalculatorResult.BroadcastAddressInBinary}");
             Console.WriteLine($"Broadcast IP Address: {subnetCalculatorResult.BroadcastIPAddress}");
+            Console.WriteLine($"\nUsable Host IP Range: {subnetCalculatorResult.FirstUsableIPAddress} - {subnetCalculatorResult.LastUsableIPAddress}");
             Console.WriteLine($"\nTotal Number of hosts: {subnetCalculatorResult.TotalNumberOfHosts}");
             Console.WriteLine($"Number of usable hosts: {subnetCalculatorResult.NumberOfUsableHosts}");
+
 
             Console.WriteLine($"\nSubnet mask with networks address in binary: {subnetCalculatorResult.NetworkSubnetMaskInBinary}");
             Console.WriteLine($"Subnet mask with networks IP Address: {subnetCalculatorResult.NetworkSubnetMaskIPAddress}");
@@ -59,15 +61,16 @@ namespace SubnetCalculator
             Console.WriteLine($"Network with network mask IP Address: {subnetCalculatorResult.NetworkWithNetworkMaskIPAddress}");
             Console.WriteLine($"\nBroadcast with network mask address in binary: {subnetCalculatorResult.BroadcastWithNetworkMaskAddressInBinary}");
             Console.WriteLine($"Broadcast with network mask IP Address: {subnetCalculatorResult.BroadcastWithNetworkMaskIPAddress}");
+            Console.WriteLine($"\nUsable Host IP Range with network mask: {subnetCalculatorResult.FirstUsableWithNetworkMaskIPAddress} - {subnetCalculatorResult.LastUsableWithNetworkMaskIPAddress}");
             Console.WriteLine($"\nTotal Number of hosts: {subnetCalculatorResult.TotalNumberOfHostsWithNetworkMask}");
             Console.WriteLine($"Number of usable hosts: {subnetCalculatorResult.NumberOfUsableHostsWithNetworkMask}");
 
-            Console.WriteLine($"\nNetwork 5 address in binary: {subnetCalculatorResult.Network5IPAddressInBinary}");
-            Console.WriteLine($"Network 5 IP Address: {subnetCalculatorResult.Network5IPAddress}");
-
-            Console.WriteLine($"\nNetwork 22 address in binary: {subnetCalculatorResult.Network22IPAddressInBinary}");
-            Console.WriteLine($"Network 22 IP Address: {subnetCalculatorResult.Network22IPAddress}");
-
+            foreach(var network in subnetCalculatorResult.Networks)
+            {
+                Console.WriteLine($"\nNetwork {network.NetworkNumber} IP Address: {network.NetworkAddress}");
+                Console.WriteLine($"Broadcast {network.NetworkNumber} IP Address: {network.BroadcastAddress}");
+                Console.WriteLine($"Network {network.NetworkNumber} Usable Host IP Range: {network.FirstUsableIPAddress} - {network.LastUsableIPAddress}");
+            }
 
             Console.WriteLine("\nPress any key to continue...");
             Console.ReadLine();

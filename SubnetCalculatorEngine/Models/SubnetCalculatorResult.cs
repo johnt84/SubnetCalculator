@@ -1,4 +1,6 @@
-﻿namespace SubnetCalculatorEngine.Models
+﻿using System.Collections.Generic;
+
+namespace SubnetCalculatorEngine.Models
 {
     public class SubnetCalculatorResult
     {
@@ -12,6 +14,9 @@
         public string NetworkIPAddress { get; set; }
         public string BroadcastAddressInBinary { get; set; }
         public string BroadcastIPAddress { get; set; }
+        public List<string> UsableIPAddresses { get; set; }
+        public string FirstUsableIPAddress { get; set; }
+        public string LastUsableIPAddress { get; set; }
         public double TotalNumberOfHosts { get; set; }
         public double NumberOfUsableHosts { get; set; }
         public string NetworkSubnetMaskInBinary { get; set; }
@@ -20,11 +25,11 @@
         public string NetworkWithNetworkMaskIPAddress { get; set; }
         public string BroadcastWithNetworkMaskAddressInBinary { get; set; }
         public string BroadcastWithNetworkMaskIPAddress { get; set; }
+        public List<string> UsableWithNetworkMaskIPAddresses { get; set; }
+        public string FirstUsableWithNetworkMaskIPAddress { get; set; }
+        public string LastUsableWithNetworkMaskIPAddress { get; set; }
         public double TotalNumberOfHostsWithNetworkMask { get; set; }
         public double NumberOfUsableHostsWithNetworkMask { get; set; }
-        public string Network5IPAddressInBinary { get; set; }
-        public string Network5IPAddress { get; set; }
-        public string Network22IPAddressInBinary { get; set; }
-        public string Network22IPAddress { get; set; }
+        public List<Network> Networks { get; set; }
     }
 }

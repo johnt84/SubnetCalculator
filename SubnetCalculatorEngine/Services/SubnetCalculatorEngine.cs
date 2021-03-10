@@ -20,6 +20,10 @@ namespace SubnetCalculatorEngine.Services
                                                                 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1 };
         private int NumberOfRemainingBits(int netMask) => NO_OF_BITS_IN_IP_ADDRESS - netMask;
 
+        private double NumberOfUsableHosts(double numberOfHosts) => numberOfHosts > 1
+                                                                    ? numberOfHosts - NO_OF_RESERVED_HOSTS
+                                                                    : 0;
+
         private List<BitsCalculatorTable> BitsCalculatorTableList() => new List<BitsCalculatorTable>()
             { 
                 new BitsCalculatorTable()
@@ -100,9 +104,8 @@ namespace SubnetCalculatorEngine.Services
             string IPAddress = splitIPAddress[0];
             int netMask = Convert.ToInt32(splitIPAddress[1]);
 
-            int extraBitsForNetworkMask = BitsCalculatorTableList()
+            var bitsCalculatorTableRecord = BitsCalculatorTableList()
                                             .Where(x => x.Networks > subnetCalculatorInput.NumberOfNetworks && x.Bits <= NumberOfRemainingBits(netMask))
-                                            .Select(x => x.Bits)
                                             .FirstOrDefault(); 
 
             string IPAddressInBinary = ConvertIPAddressToBinary(IPAddress);
@@ -120,91 +123,47 @@ namespace SubnetCalculatorEngine.Services
             string broadcastIPAddress = ConvertBinaryToIPAdress(broadcastAddressInBinary);
             string broadcastIPAddressWithMask = GetIPAddressWithMask(broadcastIPAddress, netMask);
 
+            string firstUsableIPAddress = ChangeLastOctetInIPAddress(networkIPAddress, 1);
+            string firstUsableIPAddressWithMask = GetIPAddressWithMask(firstUsableIPAddress, netMask);
+            string lastUsableIPAddress = ChangeLastOctetInIPAddress(broadcastIPAddress, -1);
+            string lastUsableIPAddressWithMask = GetIPAddressWithMask(lastUsableIPAddress, netMask);
+
+            var usableIPAddresses = GetIPAddressesInRange(firstUsableIPAddress, lastUsableIPAddress, netMask);
+
             double totalNumberOfHosts = Math.Pow(2, NumberOfRemainingBits(netMask)); //2 to the power of 
 
-            double numberOfUsableHosts = totalNumberOfHosts > 1
-                                        ? totalNumberOfHosts - NO_OF_RESERVED_HOSTS
-                                        : 0;
+            double numberOfUsableHosts = NumberOfUsableHosts(totalNumberOfHosts);
 
-            int networkMask = netMask + extraBitsForNetworkMask;
+            int networkMask = netMask + bitsCalculatorTableRecord.Bits;
 
             string networkSubnetMaskInBinary = CalculateSubNetBinaryMask(networkMask);
             string networkSubnetMaskIPAddress = ConvertBinaryToIPAdress(networkSubnetMaskInBinary);
             string networkSubnetMaskIPAddressWithMask = GetIPAddressWithMask(networkSubnetMaskIPAddress, networkMask);
 
-            string networkAddressWithNetworkMaskInBinary = GetIPAddressInBinaryUsingMaskAndNetworkMask(IPAddressInBinary, netMask, extraBitsForNetworkMask, false);
+            string networkAddressWithNetworkMaskInBinary = GetIPAddressInBinaryUsingMaskAndNetworkMask(IPAddressInBinary, netMask, bitsCalculatorTableRecord.Bits, false);
             string networkWithNetworkMaskIPAddress = ConvertBinaryToIPAdress(networkAddressWithNetworkMaskInBinary);
             string networkWithNetworkMaskIPAddressWithMask = GetIPAddressWithMask(networkWithNetworkMaskIPAddress, networkMask);
 
-            string broadcastWithNetworkMaskAddressInBinary = GetIPAddressInBinaryUsingMaskAndNetworkMask(IPAddressInBinary, netMask, extraBitsForNetworkMask, true);
+            string broadcastWithNetworkMaskAddressInBinary = GetIPAddressInBinaryUsingMaskAndNetworkMask(IPAddressInBinary, netMask, bitsCalculatorTableRecord.Bits, true);
             string broadcastWithNetworkMaskIPAddress = ConvertBinaryToIPAdress(broadcastWithNetworkMaskAddressInBinary);
             string broadcastWithNetworkMaskIPAddressWithMask = GetIPAddressWithMask(broadcastWithNetworkMaskIPAddress, networkMask);
 
-            double totalNumberOfHostsWithMask = Math.Pow(2, NumberOfRemainingBits(networkMask)); //2 to the power of 
+            string firstUsableWithNetworkMaskIPAddress = ChangeLastOctetInIPAddress(networkWithNetworkMaskIPAddress, 1);
+            string firstUsableWithNetworkMaskIPAddressWithMask = GetIPAddressWithMask(firstUsableWithNetworkMaskIPAddress, networkMask);
+            string lastUsableWithNetworkMaskIPAddress = ChangeLastOctetInIPAddress(broadcastWithNetworkMaskIPAddress, -1);
+            string lastUsableWithNetworkMaskIPAddressWithMask = GetIPAddressWithMask(lastUsableWithNetworkMaskIPAddress, networkMask);
 
-            double numberOfUsableHostsWithMask = totalNumberOfHostsWithMask > 1 
-                                                    ? totalNumberOfHostsWithMask - NO_OF_RESERVED_HOSTS 
-                                                    : 0;
+            var usableIPWithNetworkMaskAddresses = GetIPAddressesInRange(firstUsableWithNetworkMaskIPAddress, lastUsableWithNetworkMaskIPAddress, networkMask);
 
-            string N2NetworkMaskAddressInBinary = CalculateNetworkIPAddressInBinaryUsingNetworkMask(IPAddressInBinary, netMask, extraBitsForNetworkMask, 2);
-            string N2NetworkMaskIPAddress = ConvertBinaryToIPAdress(N2NetworkMaskAddressInBinary);
-            string N2NetworkMaskIPAddressWithMask = GetIPAddressWithMask(N2NetworkMaskIPAddress, networkMask);
+            double totalNumberOfHostsWithNetworkMask = Math.Pow(2, NumberOfRemainingBits(networkMask)); //2 to the power of 
 
-            string N5NetworkMaskAddressInBinary = CalculateNetworkIPAddressInBinaryUsingNetworkMask(IPAddressInBinary, netMask, extraBitsForNetworkMask, 5);
-            string N5NetworkMaskIPAddress = ConvertBinaryToIPAdress(N5NetworkMaskAddressInBinary);
-            string N5NetworkMaskIPAddressWithMask = GetIPAddressWithMask(N5NetworkMaskIPAddress, networkMask);
+            double numberOfUsableHostsWithNetworkMask = NumberOfUsableHosts(totalNumberOfHostsWithNetworkMask);
 
-            string N7NetworkMaskAddressInBinary = CalculateNetworkIPAddressInBinaryUsingNetworkMask(IPAddressInBinary, netMask, extraBitsForNetworkMask, 7);
-            string N7NetworkMaskIPAddress = ConvertBinaryToIPAdress(N7NetworkMaskAddressInBinary);
-            string N7NetworkMaskIPAddressWithMask = GetIPAddressWithMask(N7NetworkMaskIPAddress, networkMask);
-
-            string N15NetworkMaskAddressInBinary = CalculateNetworkIPAddressInBinaryUsingNetworkMask(IPAddressInBinary, netMask, extraBitsForNetworkMask, 15);
-            string N15NetworkMaskIPAddress = ConvertBinaryToIPAdress(N15NetworkMaskAddressInBinary);
-            string N15NetworkMaskIPAddressWithMask = GetIPAddressWithMask(N15NetworkMaskIPAddress, networkMask);
-
-            string N20NetworkMaskAddressInBinary = CalculateNetworkIPAddressInBinaryUsingNetworkMask(IPAddressInBinary, netMask, extraBitsForNetworkMask, 20);
-            string N20NetworkMaskIPAddress = ConvertBinaryToIPAdress(N20NetworkMaskAddressInBinary);
-            string N20NetworkMaskIPAddressWithMask = GetIPAddressWithMask(N20NetworkMaskIPAddress, networkMask);
-
-            string N22NetworkMaskAddressInBinary = CalculateNetworkIPAddressInBinaryUsingNetworkMask(IPAddressInBinary, netMask, extraBitsForNetworkMask, 22);
-            string N22NetworkMaskIPAddress = ConvertBinaryToIPAdress(N22NetworkMaskAddressInBinary);
-            string N22NetworkMaskIPAddressWithMask = GetIPAddressWithMask(N22NetworkMaskIPAddress, networkMask);
-
-            string N23NetworkMaskAddressInBinary = CalculateNetworkIPAddressInBinaryUsingNetworkMask(IPAddressInBinary, netMask, extraBitsForNetworkMask, 23);
-            string N23NetworkMaskIPAddress = ConvertBinaryToIPAdress(N23NetworkMaskAddressInBinary);
-            string N23NetworkMaskIPAddressWithMask = GetIPAddressWithMask(N23NetworkMaskIPAddress, networkMask);
-
-            string N32NetworkMaskAddressInBinary = CalculateNetworkIPAddressInBinaryUsingNetworkMask(IPAddressInBinary, netMask, extraBitsForNetworkMask, 32);
-            string N32NetworkMaskIPAddress = ConvertBinaryToIPAdress(N32NetworkMaskAddressInBinary);
-            string N32NetworkMaskIPAddressWithMask = GetIPAddressWithMask(N32NetworkMaskIPAddress, networkMask);
-
-            string N41NetworkMaskAddressInBinary = CalculateNetworkIPAddressInBinaryUsingNetworkMask(IPAddressInBinary, netMask, extraBitsForNetworkMask, 41);
-            string N41NetworkMaskIPAddress = ConvertBinaryToIPAdress(N41NetworkMaskAddressInBinary);
-            string N41NetworkMaskIPAddressWithMask = GetIPAddressWithMask(N41NetworkMaskIPAddress, networkMask);
-
-            string N55NetworkMaskAddressInBinary = CalculateNetworkIPAddressInBinaryUsingNetworkMask(IPAddressInBinary, netMask, extraBitsForNetworkMask, 55);
-            string N55NetworkMaskIPAddress = ConvertBinaryToIPAdress(N55NetworkMaskAddressInBinary);
-            string N55NetworkMaskIPAddressWithMask = GetIPAddressWithMask(N55NetworkMaskIPAddress, networkMask);
-
-            string N58NetworkMaskAddressInBinary = CalculateNetworkIPAddressInBinaryUsingNetworkMask(IPAddressInBinary, netMask, extraBitsForNetworkMask, 58);
-            string N58NetworkMaskIPAddress = ConvertBinaryToIPAdress(N58NetworkMaskAddressInBinary);
-            string N58NetworkMaskIPAddressWithMask = GetIPAddressWithMask(N58NetworkMaskIPAddress, networkMask);
-
-            string N72NetworkMaskAddressInBinary = CalculateNetworkIPAddressInBinaryUsingNetworkMask(IPAddressInBinary, netMask, extraBitsForNetworkMask, 72);
-            string N72NetworkMaskIPAddress = ConvertBinaryToIPAdress(N72NetworkMaskAddressInBinary);
-            string N72NetworkMaskIPAddressWithMask = GetIPAddressWithMask(N72NetworkMaskIPAddress, networkMask);
-
-            string N128NetworkMaskAddressInBinary = CalculateNetworkIPAddressInBinaryUsingNetworkMask(IPAddressInBinary, netMask, extraBitsForNetworkMask, 128);
-            string N128NetworkMaskIPAddress = ConvertBinaryToIPAdress(N128NetworkMaskAddressInBinary);
-            string N128NetworkMaskIPAddressWithMask = GetIPAddressWithMask(N128NetworkMaskIPAddress, networkMask);
-
-            string N145NetworkMaskAddressInBinary = CalculateNetworkIPAddressInBinaryUsingNetworkMask(IPAddressInBinary, netMask, extraBitsForNetworkMask, 145);
-            string N145NetworkMaskIPAddress = ConvertBinaryToIPAdress(N145NetworkMaskAddressInBinary);
-            string N145NetworkMaskIPAddressWithMask = GetIPAddressWithMask(N145NetworkMaskIPAddress, networkMask);
+            var networks = GetNetworks(bitsCalculatorTableRecord, IPAddressInBinary, netMask, networkMask, broadcastIPAddress);
 
             return new SubnetCalculatorResult()
             {
-                NumberOfExtraBitsRequired = extraBitsForNetworkMask,
+                NumberOfExtraBitsRequired = bitsCalculatorTableRecord.Bits,
                 IPAddress = IPAddress,
                 IPAddressInBinary = IPAddressInBinary,
                 NetMask = netMask,
@@ -214,6 +173,9 @@ namespace SubnetCalculatorEngine.Services
                 NetworkIPAddress = networkIPAddressWithMask,
                 BroadcastAddressInBinary = broadcastAddressInBinary,
                 BroadcastIPAddress = broadcastIPAddressWithMask,
+                FirstUsableIPAddress = firstUsableIPAddressWithMask,
+                LastUsableIPAddress = lastUsableIPAddressWithMask,
+                UsableIPAddresses = usableIPAddresses,
                 TotalNumberOfHosts = totalNumberOfHosts,
                 NumberOfUsableHosts = numberOfUsableHosts,
                 NetworkSubnetMaskInBinary = networkSubnetMaskInBinary,
@@ -222,12 +184,12 @@ namespace SubnetCalculatorEngine.Services
                 NetworkWithNetworkMaskIPAddress = networkWithNetworkMaskIPAddressWithMask,
                 BroadcastWithNetworkMaskAddressInBinary = broadcastWithNetworkMaskAddressInBinary,
                 BroadcastWithNetworkMaskIPAddress = broadcastWithNetworkMaskIPAddressWithMask,
-                TotalNumberOfHostsWithNetworkMask = totalNumberOfHostsWithMask,
-                NumberOfUsableHostsWithNetworkMask = numberOfUsableHostsWithMask,
-                Network5IPAddressInBinary = N5NetworkMaskAddressInBinary,
-                Network5IPAddress = N5NetworkMaskIPAddressWithMask,
-                Network22IPAddressInBinary = N5NetworkMaskAddressInBinary,
-                Network22IPAddress = N22NetworkMaskIPAddressWithMask,
+                FirstUsableWithNetworkMaskIPAddress = firstUsableWithNetworkMaskIPAddressWithMask,
+                LastUsableWithNetworkMaskIPAddress = lastUsableWithNetworkMaskIPAddressWithMask,
+                UsableWithNetworkMaskIPAddresses = usableIPWithNetworkMaskAddresses,
+                TotalNumberOfHostsWithNetworkMask = totalNumberOfHostsWithNetworkMask,
+                NumberOfUsableHostsWithNetworkMask = numberOfUsableHostsWithNetworkMask,
+                Networks = networks,
             };
         }
 
@@ -460,6 +422,86 @@ namespace SubnetCalculatorEngine.Services
             return IPAddressOctets
                     .Where(x => !string.IsNullOrEmpty(x))
                     .ToList();
+        }
+
+        private string ChangeLastOctetInIPAddress(string IPAddress, int changeLastOctetBy)
+        {
+            var IPAddressOctets = SplitIPAddressIntoOctets(IPAddress);
+            int newLastOctetNumber = Convert.ToInt32(IPAddressOctets.Last()) + changeLastOctetBy;
+            var IPAddressOctetsArr = IPAddressOctets.ToArray();
+            IPAddressOctetsArr[IPAddressOctetsArr.Length - 1] = newLastOctetNumber.ToString();
+            return string.Join(".", IPAddressOctetsArr.ToList());
+        }
+
+        private List<string> GetIPAddressesInRange(string startIPAddress, string endIPAddress, int mask)
+        {
+            var startIPAddressOctets = SplitIPAddressIntoOctets(startIPAddress);
+            int startIPAddressLastOctetNumber = Convert.ToInt32(startIPAddressOctets.Last());
+            string startIPAddressApartFromFirstOctet = string.Join(".", startIPAddressOctets.Take(startIPAddressOctets.Count - 1));
+
+            var endIPAddressOctets = SplitIPAddressIntoOctets(endIPAddress);
+            int endIPAddressOctetNumber = Convert.ToInt32(endIPAddressOctets.Last());
+
+            if(endIPAddressOctetNumber <= startIPAddressLastOctetNumber)
+            {
+                return null;
+            }
+
+            var IPAddressesInRange = new List<string>();
+
+            for(int i = startIPAddressLastOctetNumber; i <= endIPAddressOctetNumber; i++)
+            {
+                string currentIPAddress = $"{startIPAddressApartFromFirstOctet}.{i}";
+                string currentIPAddressWithMask = GetIPAddressWithMask(currentIPAddress, mask);
+                IPAddressesInRange.Add(currentIPAddressWithMask);
+            }
+
+            return IPAddressesInRange;
+        }
+
+        private List<Network> GetNetworks(BitsCalculatorTable bitsCalculatorTableRecord, string IPAddressInBinary, int netMask, int networkMask, string broadcastIPAddress)
+        {
+            var networks = new List<Network>();
+
+            for (int x = 0; x < bitsCalculatorTableRecord.Networks; x++)
+            {
+                int networkNumber = x;
+
+                string networkIPAddressInBinary = CalculateNetworkIPAddressInBinaryUsingNetworkMask(IPAddressInBinary, netMask, bitsCalculatorTableRecord.Bits, networkNumber);
+                string networkIPAddress = ConvertBinaryToIPAdress(networkIPAddressInBinary);
+                string networkIPAddressWithMask = GetIPAddressWithMask(networkIPAddress, networkMask);
+
+                string theBroadcastIPAddress = string.Empty;
+
+                if(x < bitsCalculatorTableRecord.Networks - 1)
+                {
+                    string nextNetworkIPAddressInBinary = CalculateNetworkIPAddressInBinaryUsingNetworkMask(IPAddressInBinary, netMask, bitsCalculatorTableRecord.Bits, networkNumber + 1);
+                    string nextNetworkIPAddress = ConvertBinaryToIPAdress(nextNetworkIPAddressInBinary);
+                    theBroadcastIPAddress = ChangeLastOctetInIPAddress(nextNetworkIPAddress, -1);
+                }
+                else
+                {
+                    theBroadcastIPAddress = broadcastIPAddress;
+                }
+
+                string broadcastIPAddressWithMask = GetIPAddressWithMask(theBroadcastIPAddress, networkMask);
+
+                string firstUsableIPAddress = ChangeLastOctetInIPAddress(networkIPAddress, 1);
+                string firstUsableIPAddressWithMask = GetIPAddressWithMask(firstUsableIPAddress, networkMask);
+                string lastUsableIPAddress = ChangeLastOctetInIPAddress(theBroadcastIPAddress, -1);
+                string lastUsableIPAddressWithMask = GetIPAddressWithMask(lastUsableIPAddress, networkMask);
+
+                networks.Add(new Network()
+                {
+                    NetworkNumber = networkNumber,
+                    NetworkAddress = networkIPAddressWithMask,
+                    BroadcastAddress = broadcastIPAddressWithMask,
+                    FirstUsableIPAddress = firstUsableIPAddressWithMask,
+                    LastUsableIPAddress = lastUsableIPAddressWithMask,
+                });
+            }
+
+            return networks;
         }
     }
 }
