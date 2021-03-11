@@ -25,20 +25,31 @@ namespace SubnetCalculator
             //    NumberOfNetworks = 17,
             //};
 
+            Console.WriteLine("Subnet Calculator");
+
+            Console.WriteLine("\nSubnet Input");
+            Console.WriteLine("\nEnter the IP Address");
+            string IPAddress = Console.ReadLine();
+
+            int numberfNetworks = 0;
+            bool validNumberOfNetworks = false;
+
+            while(!validNumberOfNetworks)
+            {
+                Console.WriteLine("\nEnter the number of netowrks required");
+                validNumberOfNetworks = int.TryParse(Console.ReadLine(), out numberfNetworks);
+            }
+
             var subnetCalculatorInput = new SubnetCalculatorInput()
             {
-                IPAddress = "10.0.50.0/24",//"192.168.224.0/21",
-                NumberOfNetworks = 11, //512 //Example from https://app.pluralsight.com/course-player?clipId=67cc4d0a-7ddf-46f3-86ee-2fb6efc55e9d
+                IPAddress = IPAddress,//"192.168.224.0/21",
+                NumberOfNetworks = numberfNetworks, //512 //Example from https://app.pluralsight.com/course-player?clipId=67cc4d0a-7ddf-46f3-86ee-2fb6efc55e9d
             };
 
             var subnetCalculator = new SubnetCalculatorEngine.Services.SubnetCalculatorEngine();
 
             var subnetCalculatorResult =  subnetCalculator.CalculateSubnet(subnetCalculatorInput);
 
-
-            Console.WriteLine("Subnetting Calculation Input");
-            Console.WriteLine($"\nIP Address: {subnetCalculatorInput.IPAddress}");
-            Console.WriteLine($"Number of networks required: {subnetCalculatorInput.NumberOfNetworks}");
 
             Console.WriteLine("\nSubnetting Results");
 
