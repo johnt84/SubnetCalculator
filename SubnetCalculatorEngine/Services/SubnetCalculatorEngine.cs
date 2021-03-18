@@ -10,8 +10,9 @@ namespace SubnetCalculatorEngine.Services
         private const int NO_OF_OCTETS = 4;
         private const int NO_OF_BITS_IN_IP_ADDRESS = 32;
         private const int NO_OF_RESERVED_HOSTS = 2;
+        private const string IN_ADDR_ARPA = "in-addr.arpa";
 
-    private bool IsLastOctet(int octetIndex) => octetIndex == NO_OF_OCTETS - 1;
+        private bool IsLastOctet(int octetIndex) => octetIndex == NO_OF_OCTETS - 1;
         private string AddDotInBetweenOctets(int octetIndex) => !IsLastOctet(octetIndex) ? "." : string.Empty;
         private string GetIPAddressWithMask(string IPAddress, int mask) => $"{IPAddress}/{mask}";
         private string GetBroadcastBit(bool isBroadcastBit) => isBroadcastBit ? "1" : "0";
@@ -96,6 +97,16 @@ namespace SubnetCalculatorEngine.Services
 
         public SubnetCalculatorResult CalculateSubnet(SubnetCalculatorInput subnetCalculatorInput)
         {
+            string errorMessage = CheckForErrors(subnetCalculatorInput);
+
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                return new SubnetCalculatorResult()
+                {
+                    ErrorMessage = errorMessage,
+                };
+            }
+            
             var splitIPAddress = subnetCalculatorInput
                                     .IPAddress
                                     .Split('/')
@@ -122,6 +133,8 @@ namespace SubnetCalculatorEngine.Services
             string broadcastAddressInBinary = GetIPAddressInBinaryUsingMask(IPAddressInBinary, netMask, true);
             string broadcastIPAddress = ConvertBinaryToIPAdress(broadcastAddressInBinary);
             string broadcastIPAddressWithMask = GetIPAddressWithMask(broadcastIPAddress, netMask);
+
+            var reverseArpaIPAddressResult = GetArpaAddress(IPAddress);
 
             string firstUsableIPAddress = ChangeLastOctetInIPAddress(networkIPAddress, 1);
             string firstUsableIPAddressWithMask = GetIPAddressWithMask(firstUsableIPAddress, netMask);
@@ -174,6 +187,8 @@ namespace SubnetCalculatorEngine.Services
                 NetworkIPAddress = networkIPAddressWithMask,
                 BroadcastAddressInBinary = broadcastAddressInBinary,
                 BroadcastIPAddress = broadcastIPAddressWithMask,
+                ReverseArpaHostName = reverseArpaIPAddressResult.ReverseArpaHostName,
+                ReverseArpaIPAddresss = reverseArpaIPAddressResult.ReverseArpaIPAddresss,
                 FirstUsableIPAddress = firstUsableIPAddressWithMask,
                 LastUsableIPAddress = lastUsableIPAddressWithMask,
                 UsableIPAddresses = usableIPAddresses,
@@ -505,6 +520,50 @@ namespace SubnetCalculatorEngine.Services
             }
 
             return networks;
+        }
+
+        private ReverseArpaIPAddressResult GetArpaAddress(string IPAddress)
+        {
+            //arpa address is first three octets in reverse order with .IN_ADDR_ARPA at end 
+            //so if IP Address is 191.96.208.0 then reverse arpa address is 208.96.191.in-addr.arpa
+
+            var IPAddressOctets = SplitIPAddressIntoOctets(IPAddress);
+
+            IPAddressOctets.Reverse();
+
+            string reverseArpaHostName = $"{string.Join(".", IPAddressOctets.Skip(1))}.{IN_ADDR_ARPA}";
+            string reverseArpaIPAddresss = $"{string.Join(".", IPAddressOctets)}.{IN_ADDR_ARPA}";
+
+            return new ReverseArpaIPAddressResult()
+            {
+                ReverseArpaHostName = reverseArpaHostName,
+                ReverseArpaIPAddresss = reverseArpaIPAddresss,
+            };
+        }
+
+        private string CheckForErrors(SubnetCalculatorInput subnetCalculatorInput)
+        {
+            if (string.IsNullOrEmpty(subnetCalculatorInput.IPAddress))
+            {
+                return "Invalid IP Address entered";
+            }
+            if (!subnetCalculatorInput.IPAddress.Contains("/"))
+            {
+                return "Invalid IP Address as there is no mask (/) included";
+            }
+            if (subnetCalculatorInput.NumberOfNetworks == 0)
+            {
+                return "Invalid Number of networks entered entered";
+            }
+
+            var splitIPAddressIntoOctets = SplitIPAddressIntoOctets(subnetCalculatorInput.IPAddress);
+
+            if(splitIPAddressIntoOctets.Count != NO_OF_OCTETS)
+            {
+                return "Invalid IP Address entered";
+            }
+
+            return string.Empty;
         }
     }
 }

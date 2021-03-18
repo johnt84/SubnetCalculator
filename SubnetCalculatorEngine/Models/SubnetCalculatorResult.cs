@@ -15,6 +15,8 @@ namespace SubnetCalculatorEngine.Models
         public string NetworkIPAddress { get; set; }
         public string BroadcastAddressInBinary { get; set; }
         public string BroadcastIPAddress { get; set; }
+        public string ReverseArpaHostName { get; set; }
+        public string ReverseArpaIPAddresss { get; set; }
         public List<string> UsableIPAddresses { get; set; }
         public string FirstUsableIPAddress { get; set; }
         public string LastUsableIPAddress { get; set; }
@@ -32,5 +34,6 @@ namespace SubnetCalculatorEngine.Models
         public double TotalNumberOfHostsWithNetworkMask { get; set; }
         public double NumberOfUsableHostsWithNetworkMask { get; set; }
         public List<Network> Networks { get; set; }
+        public string ErrorMessage { get; set; }
     }
 }
