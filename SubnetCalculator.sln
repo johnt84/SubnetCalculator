@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30611.23
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SubnetCalculator", "SubnetCalculator\SubnetCalculator.csproj", "{66C8AA39-C9F2-4C1A-8BC4-CF8D7DFAA66E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SubnetCalculator", "SubnetCalculator\SubnetCalculator.csproj", "{66C8AA39-C9F2-4C1A-8BC4-CF8D7DFAA66E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SubnetCalculatorEngine", "SubnetCalculatorEngine\SubnetCalculatorEngine.csproj", "{116A5658-8E43-4A3D-B6ED-A48C88F32645}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SubnetCalculatorEngine", "SubnetCalculatorEngine\SubnetCalculatorEngine.csproj", "{116A5658-8E43-4A3D-B6ED-A48C88F32645}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SubnetCalculatorBlazorServerApp", "SubnetCalculatorBlazorServerApp\SubnetCalculatorBlazorServerApp.csproj", "{C6DADF08-EBE3-4D0E-84C6-95F7A8411EA6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{116A5658-8E43-4A3D-B6ED-A48C88F32645}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{116A5658-8E43-4A3D-B6ED-A48C88F32645}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{116A5658-8E43-4A3D-B6ED-A48C88F32645}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6DADF08-EBE3-4D0E-84C6-95F7A8411EA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6DADF08-EBE3-4D0E-84C6-95F7A8411EA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6DADF08-EBE3-4D0E-84C6-95F7A8411EA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6DADF08-EBE3-4D0E-84C6-95F7A8411EA6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
