@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using SubnetCalculatorEngine.Services;
 
 namespace SubnetCalculatorBlazorServerApp
 {
@@ -20,9 +19,7 @@ namespace SubnetCalculatorBlazorServerApp
             services.AddRazorPages();
             services.AddServerSideBlazor();
 
-            services.AddSingleton<SubnetCalculatorEngine.Services.SubnetCalculatorEngine>();
-            services.AddSingleton<SubnetCalculatorEngine.Models.SubnetCalculatorInput>();
-            services.AddSingleton<SubnetCalculatorEngine.Models.SubnetCalculatorResult>();
+            services.AddScoped<SubnetCalculatorEngine.Services.SubnetCalculatorEngine>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
