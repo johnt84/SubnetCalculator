@@ -68,7 +68,8 @@ namespace SubnetCalculator
                 Console.WriteLine($"\nUsable Host IP Range: {subnetCalculatorResult.FirstUsableIPAddress} - {subnetCalculatorResult.LastUsableIPAddress}");
                 Console.WriteLine($"\nTotal Number of hosts: {subnetCalculatorResult.TotalNumberOfHosts}");
                 Console.WriteLine($"Number of usable hosts: {subnetCalculatorResult.NumberOfUsableHosts}");
-
+                Console.WriteLine($"\nIP Type: {(subnetCalculatorResult.IPType.ToString())}");
+                Console.WriteLine($"IP Class: {(subnetCalculatorResult.IPClass.HasValue ? subnetCalculatorResult.IPClass.Value.ToString() : string.Empty)}");
 
                 Console.WriteLine($"\nSubnet mask with networks address in binary: {subnetCalculatorResult.NetworkSubnetMaskInBinary}");
                 Console.WriteLine($"Subnet mask with networks IP Address: {subnetCalculatorResult.NetworkSubnetMaskIPAddress}");

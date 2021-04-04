@@ -1,4 +1,4 @@
-﻿@page "/subnetcalculator/calculator"
+﻿@page "/subnetcalculator/ipv4calculator"
 @using SubnetCalculatorEngine.Models
 @inject SubnetCalculatorEngine.Services.SubnetCalculatorEngine SubnetCalculator
 
@@ -32,11 +32,9 @@
     }
 </style>
 
-<h3>IP Subnet Calculator</h3>
+<h3>IPv4 Subnet Calculator</h3>
 
 <div>
-    <h2>IPv4 Subnet Calculator</h2>
-
     <div style="padding-bottom: 25px;">
         <EditForm Model="subnetCalculatorInput" OnValidSubmit="@CalculateSubnet">
             <div class="form-group">
@@ -97,7 +95,7 @@
             </tr>
             <tr>
                 <td>Subnet Mask IP Address in Binary:</td>
-                <td>@subnetCalculatorResult.SubnetMaskIPAddress</td>
+                <td>@subnetCalculatorResult.SubnetMaskInBinary</td>
             </tr>
             <tr>
                 <td>Network Address:</td>
@@ -135,6 +133,17 @@
                 <td>Reverse Arpa IP Address:</td>
                 <td>@subnetCalculatorResult.ReverseArpaIPAddresss</td>
             </tr>
+            <tr>
+                <td>IP Type:</td>
+                <td>@subnetCalculatorResult.IPType.ToString()</td>
+            </tr>
+            @if (subnetCalculatorResult.IPClass.HasValue)
+            {
+                <tr>
+                    <td>IP Class:</td>
+                    <td>@subnetCalculatorResult.IPClass.Value.ToString()</td>
+                </tr>
+            }
         </table>
 
         <table id="tblSubnetCalculationWithNetowrkMaskResult">
@@ -194,6 +203,7 @@
 @code {
     private SubnetCalculatorInput subnetCalculatorInput = new SubnetCalculatorInput();
     private SubnetCalculatorResult subnetCalculatorResult;
+
 
     private bool isSubnetCalculated => subnetCalculatorResult != null
                                         && string.IsNullOrEmpty(subnetCalculatorResult.ErrorMessage)

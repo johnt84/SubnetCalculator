@@ -1,4 +1,5 @@
 ﻿using SubnetCalculatorEngine.Models;
+using SubnetCalculatorEngine.Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -95,6 +96,13 @@ namespace SubnetCalculatorEngine.Services
                 },
             };
 
+        private List<PrivateIPRange> PrivateIPRangeTable() => new List<PrivateIPRange>()
+        {
+            new PrivateIPRange(IPClass.A, "10.0.0.0 - 10.255.255.255"),
+            new PrivateIPRange(IPClass.B, "172.16.0.0 - 172.31.255.255"),
+            new PrivateIPRange(IPClass.C, "192.168.0.0 - 192.168.255.255"),
+        };
+
         public SubnetCalculatorResult CalculateSubnet(SubnetCalculatorInput subnetCalculatorInput)
         {
             string errorMessage = CheckForErrors(subnetCalculatorInput);
@@ -172,7 +180,9 @@ namespace SubnetCalculatorEngine.Services
 
             double numberOfUsableHostsWithNetworkMask = NumberOfUsableHosts(totalNumberOfHostsWithNetworkMask);
 
-            var networks = GetNetworks(bitsCalculatorTableRecord, IPAddressInBinary, netMask, networkMask, broadcastIPAddress);
+            var networks = GetNetworks(bitsCalculatorTableRecord, IPAddressInBinary, netMask, networkMask);
+
+            var IPInformation = GetIPInformation(IPAddress);
 
             return new SubnetCalculatorResult()
             {
@@ -194,6 +204,8 @@ namespace SubnetCalculatorEngine.Services
                 UsableIPAddresses = usableIPAddresses,
                 TotalNumberOfHosts = totalNumberOfHosts,
                 NumberOfUsableHosts = numberOfUsableHosts,
+                IPType = IPInformation.IPType,
+                IPClass = IPInformation.IPClass,
                 NetworkSubnetMaskInBinary = networkSubnetMaskInBinary,
                 NetworkSubnetMaskIPAddress = networkSubnetMaskIPAddressWithMask,
                 NetworkWithNetworkMaskAddressInBinary = networkAddressWithNetworkMaskInBinary,
@@ -338,7 +350,7 @@ namespace SubnetCalculatorEngine.Services
             return AddDotsToBinaryAddress(IPAddressNetwork);
         }
 
-        private string CalculateNetworkIPAddressInBinaryUsingNetworkMask(string IPAddressInBinary, int mask, int numberOfExtraBits, int numberOfNetworks)
+        private string CalculateIPAddressInBinaryUsingNetworkMask(string IPAddressInBinary, int mask, int numberOfExtraBits, int numberOfNetworks, bool isBroadcast)
         {
             string networkBinary = CalculateIPOctetInBinary(numberOfNetworks.ToString(), numberOfBits: numberOfExtraBits);
 
@@ -351,7 +363,7 @@ namespace SubnetCalculatorEngine.Services
 
             for(int i= 0; i < remainingBits; i++)
             {
-                IPAddress += "0";
+                IPAddress += GetBroadcastBit(isBroadcast);
             }
 
             return AddDotsToBinaryAddress(IPAddress);
@@ -475,7 +487,7 @@ namespace SubnetCalculatorEngine.Services
             return IPAddressesInRange;
         }
 
-        private List<Network> GetNetworks(BitsCalculatorTable bitsCalculatorTableRecord, string IPAddressInBinary, int netMask, int networkMask, string broadcastIPAddress)
+        private List<Network> GetNetworks(BitsCalculatorTable bitsCalculatorTableRecord, string IPAddressInBinary, int netMask, int networkMask)
         {
             var networks = new List<Network>();
 
@@ -483,30 +495,34 @@ namespace SubnetCalculatorEngine.Services
             {
                 int networkNumber = x;
 
-                string networkIPAddressInBinary = CalculateNetworkIPAddressInBinaryUsingNetworkMask(IPAddressInBinary, netMask, bitsCalculatorTableRecord.Bits, networkNumber);
+                string networkIPAddressInBinary = CalculateIPAddressInBinaryUsingNetworkMask(IPAddressInBinary, netMask, bitsCalculatorTableRecord.Bits, networkNumber, false);
                 string networkIPAddress = ConvertBinaryToIPAdress(networkIPAddressInBinary);
                 string networkIPAddressWithMask = GetIPAddressWithMask(networkIPAddress, networkMask);
 
-                string theBroadcastIPAddress = string.Empty;
+                string broadcastIPAddressInBinary = CalculateIPAddressInBinaryUsingNetworkMask(IPAddressInBinary, netMask, bitsCalculatorTableRecord.Bits, networkNumber, true);
+                string broadcastIPAddress = ConvertBinaryToIPAdress(broadcastIPAddressInBinary);
+                string broadcastIPAddressWithMask = GetIPAddressWithMask(broadcastIPAddress, networkMask);
 
-                bool isLastNetwork = x == bitsCalculatorTableRecord.Networks - 1;
+                //string theBroadcastIPAddress = string.Empty;
 
-                if (!isLastNetwork)
-                {
-                    string nextNetworkIPAddressInBinary = CalculateNetworkIPAddressInBinaryUsingNetworkMask(IPAddressInBinary, netMask, bitsCalculatorTableRecord.Bits, networkNumber + 1);
-                    string nextNetworkIPAddress = ConvertBinaryToIPAdress(nextNetworkIPAddressInBinary);
-                    theBroadcastIPAddress = ChangeLastOctetInIPAddress(nextNetworkIPAddress, -1);
-                }
-                else
-                {
-                    theBroadcastIPAddress = broadcastIPAddress;
-                }
+                //bool isLastNetwork = x == bitsCalculatorTableRecord.Networks - 1;
 
-                string broadcastIPAddressWithMask = GetIPAddressWithMask(theBroadcastIPAddress, networkMask);
+                //if (!isLastNetwork)
+                //{
+                //    string nextNetworkIPAddressInBinary = CalculateIPAddressInBinaryUsingNetworkMask(IPAddressInBinary, netMask, bitsCalculatorTableRecord.Bits, networkNumber + 1);
+                //    string nextNetworkIPAddress = ConvertBinaryToIPAdress(nextNetworkIPAddressInBinary);
+                //    theBroadcastIPAddress = ChangeLastOctetInIPAddress(nextNetworkIPAddress, -1);
+                //}
+                //else
+                //{
+                //    theBroadcastIPAddress = broadcastIPAddress;
+                //}
+
+                //string broadcastIPAddressWithMask = GetIPAddressWithMask(theBroadcastIPAddress, networkMask);
 
                 string firstUsableIPAddress = ChangeLastOctetInIPAddress(networkIPAddress, 1);
                 string firstUsableIPAddressWithMask = GetIPAddressWithMask(firstUsableIPAddress, networkMask);
-                string lastUsableIPAddress = ChangeLastOctetInIPAddress(theBroadcastIPAddress, -1);
+                string lastUsableIPAddress = ChangeLastOctetInIPAddress(broadcastIPAddress, -1);
                 string lastUsableIPAddressWithMask = GetIPAddressWithMask(lastUsableIPAddress, networkMask);
 
                 networks.Add(new Network()
@@ -551,9 +567,9 @@ namespace SubnetCalculatorEngine.Services
             {
                 return "Invalid IP Address as there is no mask (/) included";
             }
-            if (subnetCalculatorInput.NumberOfNetworks == 0)
+            if (subnetCalculatorInput.NumberOfNetworks < 0)
             {
-                return "Invalid Number of networks entered entered";
+                return "Invalid number of networks entered";
             }
 
             var splitIPAddressIntoOctets = SplitIPAddressIntoOctets(subnetCalculatorInput.IPAddress);
@@ -564,6 +580,33 @@ namespace SubnetCalculatorEngine.Services
             }
 
             return string.Empty;
+        }
+
+        public IPInformation GetIPInformation(string IPAddress)
+        {
+            var IPAddressRangeOctets = SplitIPAddressIntoOctets(IPAddress);
+
+            int firstOctetInIPAddress = Convert.ToInt32(IPAddressRangeOctets.First());
+
+            var privateIPRangeTable = PrivateIPRangeTable();
+
+            foreach(var privateIPRange in privateIPRangeTable)
+            {
+                var IPAddressRangeSplit = privateIPRange.IPRange.Split(" - ").ToList();
+
+                string firstIPAddressInRange = IPAddressRangeSplit.First();
+
+                var firstIPAddressInRangeOctets = SplitIPAddressIntoOctets(firstIPAddressInRange);
+
+                int firstOctetInFirstIPAddressInRange = Convert.ToInt32(firstIPAddressInRangeOctets.First());
+
+                if(firstOctetInIPAddress == firstOctetInFirstIPAddressInRange)
+                {
+                    return new IPInformation(IPType.Private, privateIPRange.IPClass);
+                }
+            }
+
+            return new IPInformation(IPType.Public, null);
         }
     }
 }

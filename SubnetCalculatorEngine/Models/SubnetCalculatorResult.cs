@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SubnetCalculatorEngine.Models.Enums;
+using System.Collections.Generic;
 
 namespace SubnetCalculatorEngine.Models
 {
@@ -22,6 +23,8 @@ namespace SubnetCalculatorEngine.Models
         public string LastUsableIPAddress { get; set; }
         public double TotalNumberOfHosts { get; set; }
         public double NumberOfUsableHosts { get; set; }
+        public IPType IPType { get; set; }
+        public IPClass? IPClass { get; set; }
         public string NetworkSubnetMaskInBinary { get; set; }
         public string NetworkSubnetMaskIPAddress { get; set; }
         public string NetworkWithNetworkMaskAddressInBinary { get; set; }
