@@ -1,0 +1,225 @@
+﻿@page "/subnetcalculator/ipv4calculator"
+@using SubnetCalculatorEngine.Models
+@inject SubnetCalculatorEngine.Services.SubnetCalculatorEngine SubnetCalculator
+
+
+<style>
+    table, td, th {
+        border: 1px solid black;
+    }
+
+    table {
+        border-collapse: collapse;
+        margin-bottom: 25px;
+    }
+
+    #tblNetworksOverview {
+        width: 265px;
+    }
+
+    #tblSubnetCalculationResult {
+        width: 560px;
+    }
+
+    #tblSubnetCalculationWithNetowrkMaskResult {
+        width: 655px;
+    }
+
+    #tblNetworks {
+        width: 780px;
+        text-align: center;
+    }
+</style>
+
+<h3>IPv4 Subnet Calculator</h3>
+
+<div>
+    <div style="padding-bottom: 25px;">
+        <EditForm Model="subnetCalculatorInput" OnValidSubmit="@CalculateSubnet">
+            <div class="form-group">
+                <label class="control-label col-md-2">IP Address</label>
+                <div class="col-md-3">
+                    <InputText class="form-control" @bind-Value="subnetCalculatorInput.IPAddress" />
+                    <ValidationMessage For="(() => subnetCalculatorInput.IPAddress)" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2">Number of Networks</label>
+                <div class="col-md-3">
+                    <InputNumber class="form-control" @bind-Value="subnetCalculatorInput.NumberOfNetworks" />
+                    <ValidationMessage For="(() => subnetCalculatorInput.NumberOfNetworks)" />
+                </div>
+            </div>
+
+            <button type="submit">Calculate</button>
+        </EditForm>
+    </div>
+
+    @if (isSubnetCalculationError)
+    {
+        <div style="color:red; padding-bottom: 20px">
+
+            <ul>
+                <li>@subnetCalculatorResult.ErrorMessage</li>
+            </ul>
+        </div>
+    }
+
+    @if (isSubnetCalculated)
+    {
+        <table id="tblNetworksOverview">
+            <tr>
+                <td>Number of extra bits required:</td>
+                <td>@subnetCalculatorResult.NumberOfExtraBitsRequired</td>
+            </tr>
+            <tr>
+                <td>Number of networks provided:</td>
+                <td>@subnetCalculatorResult.NumberOfNetworksProvided</td>
+            </tr>
+        </table>
+
+        <table id="tblSubnetCalculationResult">
+            <tr>
+                <td>IP Address:</td>
+                <td>@subnetCalculatorResult.IPAddress</td>
+            </tr>
+            <tr>
+                <td>IP Address in Binary:</td>
+                <td>@subnetCalculatorResult.IPAddressInBinary</td>
+            </tr>
+            <tr>
+                <td>Subnet Mask IP Address:</td>
+                <td>@subnetCalculatorResult.SubnetMaskIPAddress</td>
+            </tr>
+            <tr>
+                <td>Subnet Mask IP Address in Binary:</td>
+                <td>@subnetCalculatorResult.SubnetMaskInBinary</td>
+            </tr>
+            <tr>
+                <td>Network Address:</td>
+                <td>@subnetCalculatorResult.NetworkIPAddress</td>
+            </tr>
+            <tr>
+                <td>Network Address in Binary:</td>
+                <td>@subnetCalculatorResult.NetworkAddressInBinary</td>
+            </tr>
+            <tr>
+                <td>Broadcast Address:</td>
+                <td>@subnetCalculatorResult.BroadcastIPAddress</td>
+            </tr>
+            <tr>
+                <td>Broadcast Address in Binary:</td>
+                <td>@subnetCalculatorResult.BroadcastAddressInBinary</td>
+            </tr>
+            <tr>
+                <td>Usable Host IP Range:</td>
+                <td>@subnetCalculatorResult.FirstUsableIPAddress - @subnetCalculatorResult.LastUsableIPAddress</td>
+            </tr>
+            <tr>
+                <td>Total Number of Hosts:</td>
+                <td>@subnetCalculatorResult.TotalNumberOfHosts</td>
+            </tr>
+            <tr>
+                <td>Number of Usable Hosts:</td>
+                <td>@subnetCalculatorResult.NumberOfUsableHosts</td>
+            </tr>
+            <tr>
+                <td>Reverse Arpa Host Name:</td>
+                <td>@subnetCalculatorResult.ReverseArpaHostName</td>
+            </tr>
+            <tr>
+                <td>Reverse Arpa IP Address:</td>
+                <td>@subnetCalculatorResult.ReverseArpaIPAddresss</td>
+            </tr>
+            <tr>
+                <td>IP Type:</td>
+                <td>@subnetCalculatorResult.IPType.ToString()</td>
+            </tr>
+            @if (subnetCalculatorResult.IPClass.HasValue)
+            {
+                <tr>
+                    <td>IP Class:</td>
+                    <td>@subnetCalculatorResult.IPClass.Value.ToString()</td>
+                </tr>
+            }
+        </table>
+
+        <table id="tblSubnetCalculationWithNetowrkMaskResult">
+            <tr>
+                <td>Subnet mask with networks IP Address:</td>
+                <td>@subnetCalculatorResult.NetworkSubnetMaskIPAddress</td>
+            </tr>
+            <tr>
+                <td>Subnet mask with network address in binary:</td>
+                <td>@subnetCalculatorResult.NetworkSubnetMaskInBinary</td>
+            </tr>
+            <tr>
+                <td>Network with network mask IP Address:</td>
+                <td>@subnetCalculatorResult.NetworkWithNetworkMaskIPAddress</td>
+            </tr>
+            <tr>
+                <td>Network address with network mask in binary:</td>
+                <td>@subnetCalculatorResult.NetworkWithNetworkMaskAddressInBinary</td>
+            </tr>
+            <tr>
+                <td>Broadcast with network mask IP Address:</td>
+                <td>@subnetCalculatorResult.BroadcastWithNetworkMaskIPAddress</td>
+            </tr>
+            <tr>
+                <td>Broadcast address with network mask in binary:</td>
+                <td>@subnetCalculatorResult.BroadcastWithNetworkMaskAddressInBinary</td>
+            </tr>
+            <tr>
+                <td>Usable Host IP Range with network mask:</td>
+                <td>@subnetCalculatorResult.FirstUsableWithNetworkMaskIPAddress - @subnetCalculatorResult.LastUsableWithNetworkMaskIPAddress</td>
+            </tr>
+        </table>
+
+        @if (subnetCalculatorResult.Networks.Count > 0)
+        {
+            <h3>All @subnetCalculatorResult.Networks.Count of the possible /@subnetCalculatorResult.NetworkMask networks</h3>
+
+            <table id="tblNetworks" style="margin-top: 25px;">
+                <tr>
+                    <th>Network Number</th>
+                    <th>Network IP Address</th>
+                    <th>Broadcast IP Address</th>
+                    <th>Usable Host IP Range</th>
+                </tr>
+                @foreach (var network in subnetCalculatorResult.Networks)
+                {
+                    <tr>
+                        <td>@network.NetworkNumber</td>
+                        <td>@network.NetworkAddress</td>
+                        <td>@network.BroadcastAddress</td>
+                        <td>@network.FirstUsableIPAddress - @network.LastUsableIPAddress</td>
+                    </tr>
+                }
+            </table>
+        }
+    }
+</div>
+
+@code {
+    private SubnetCalculatorInput subnetCalculatorInput = new SubnetCalculatorInput();
+    private SubnetCalculatorResult subnetCalculatorResult;
+
+
+    private bool isSubnetCalculated => subnetCalculatorResult != null
+                                        && string.IsNullOrEmpty(subnetCalculatorResult.ErrorMessage)
+                                        && !string.IsNullOrEmpty(subnetCalculatorResult.IPAddress);
+
+    private bool isSubnetCalculationError => subnetCalculatorResult != null
+                                        && !string.IsNullOrEmpty(subnetCalculatorResult.ErrorMessage);
+
+    protected override void OnInitialized()
+    {
+        SubnetCalculator = new SubnetCalculatorEngine.Services.SubnetCalculatorEngine();
+    }
+
+    private void CalculateSubnet()
+    {
+        subnetCalculatorResult = SubnetCalculator.CalculateSubnet(subnetCalculatorInput);
+    }
+}

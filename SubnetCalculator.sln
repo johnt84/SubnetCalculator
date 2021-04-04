@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SubnetCalculatorEngine", "S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SubnetCalculatorBlazorServerApp", "SubnetCalculatorBlazorServerApp\SubnetCalculatorBlazorServerApp.csproj", "{C6DADF08-EBE3-4D0E-84C6-95F7A8411EA6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SubnetCalculator.UnitTests", "SubnetCalculator.UnitTests\SubnetCalculator.UnitTests.csproj", "{2A269539-B732-41D5-B2AB-447029D6CCB2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SubnetCalculator.UnitTests", "SubnetCalculator.UnitTests\SubnetCalculator.UnitTests.csproj", "{2A269539-B732-41D5-B2AB-447029D6CCB2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SubnetCalculatorBlazorWASM", "SubnetCalculatorBlazorWASM\SubnetCalculatorBlazorWASM.csproj", "{00C3370D-9B04-4E1C-93ED-CBAD07E76894}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{2A269539-B732-41D5-B2AB-447029D6CCB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A269539-B732-41D5-B2AB-447029D6CCB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A269539-B732-41D5-B2AB-447029D6CCB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00C3370D-9B04-4E1C-93ED-CBAD07E76894}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00C3370D-9B04-4E1C-93ED-CBAD07E76894}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00C3370D-9B04-4E1C-93ED-CBAD07E76894}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00C3370D-9B04-4E1C-93ED-CBAD07E76894}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
