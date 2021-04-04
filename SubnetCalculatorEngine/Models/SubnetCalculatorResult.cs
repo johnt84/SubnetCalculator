@@ -25,6 +25,7 @@ namespace SubnetCalculatorEngine.Models
         public double NumberOfUsableHosts { get; set; }
         public IPType IPType { get; set; }
         public IPClass? IPClass { get; set; }
+        public int NetworkMask { get; set; }
         public string NetworkSubnetMaskInBinary { get; set; }
         public string NetworkSubnetMaskIPAddress { get; set; }
         public string NetworkWithNetworkMaskAddressInBinary { get; set; }

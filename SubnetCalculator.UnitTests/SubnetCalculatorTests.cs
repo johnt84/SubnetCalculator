@@ -8,20 +8,14 @@ namespace SubnetCalculator.UnitTests
     public class SubnetCalculatorTests
     {
         //Tests scenarios are taken from the Network Layer Addressing and
-        //Subnetting Plualsght course at https://app.pluralsight.com/course-player?clipId=57524c33-f76e-45ad-b8c4-2d9d3a1ffded
+        //Subnetting Pluralsight course at https://app.pluralsight.com/course-player?clipId=57524c33-f76e-45ad-b8c4-2d9d3a1ffded
 
         [TestMethod]
         public void SubnetIPv4Test1()
         {
-            var subnetCalculatorInput = new SubnetCalculatorInput()
-            {
-                IPAddress = "10.0.50.0/24",
-                NumberOfNetworks = 11,
-            };
+            var subnetCalculatorInput = new SubnetCalculatorInput("10.0.50.0/24", 11);
 
-            var subnetCalculator = new SubnetCalculatorEngine.Services.SubnetCalculatorEngine();
-
-            var subnetCalculatorResult = subnetCalculator.CalculateSubnet(subnetCalculatorInput);
+            var subnetCalculatorResult = GetSubnetCalculatorResult(subnetCalculatorInput);
 
             Assert.IsTrue(subnetCalculatorResult.NumberOfExtraBitsRequired == 4);
             Assert.IsTrue(subnetCalculatorResult.NumberOfNetworksProvided == 16);
@@ -52,7 +46,7 @@ namespace SubnetCalculator.UnitTests
             Assert.IsTrue(subnetCalculatorResult.FirstUsableWithNetworkMaskIPAddress == "10.0.50.1/28");
             Assert.IsTrue(subnetCalculatorResult.LastUsableWithNetworkMaskIPAddress == "10.0.50.254/28");
 
-            Assert.IsTrue(subnetCalculatorResult.Networks.Count == 16);
+            Assert.IsTrue(subnetCalculatorResult.Networks.Count == subnetCalculatorResult.NumberOfNetworksProvided);
 
             var networks = subnetCalculatorResult.Networks.ToArray();
 
@@ -88,15 +82,9 @@ namespace SubnetCalculator.UnitTests
         [TestMethod]
         public void SubnetIPv4Test2()
         {
-            var subnetCalculatorInput = new SubnetCalculatorInput()
-            {
-                IPAddress = "10.0.0.0/16",
-                NumberOfNetworks = 500,
-            };
+            var subnetCalculatorInput = new SubnetCalculatorInput("10.0.0.0/16", 500);
 
-            var subnetCalculator = new SubnetCalculatorEngine.Services.SubnetCalculatorEngine();
-
-            var subnetCalculatorResult = subnetCalculator.CalculateSubnet(subnetCalculatorInput);
+            var subnetCalculatorResult = GetSubnetCalculatorResult(subnetCalculatorInput);
 
             Assert.IsTrue(subnetCalculatorResult.NumberOfExtraBitsRequired == 9);
             Assert.IsTrue(subnetCalculatorResult.NumberOfNetworksProvided == 512);
@@ -127,7 +115,7 @@ namespace SubnetCalculator.UnitTests
             Assert.IsTrue(subnetCalculatorResult.FirstUsableWithNetworkMaskIPAddress == "10.0.0.1/25");
             Assert.IsTrue(subnetCalculatorResult.LastUsableWithNetworkMaskIPAddress == "10.0.255.254/25");
 
-            Assert.IsTrue(subnetCalculatorResult.Networks.Count == 512);
+            Assert.IsTrue(subnetCalculatorResult.Networks.Count == subnetCalculatorResult.NumberOfNetworksProvided);
 
             var networks = subnetCalculatorResult.Networks.ToArray();
 
@@ -163,15 +151,9 @@ namespace SubnetCalculator.UnitTests
         [TestMethod]
         public void SubnetIPv4Test3()
         {
-            var subnetCalculatorInput = new SubnetCalculatorInput()
-            {
-                IPAddress = "10.200.0.0/13",
-                NumberOfNetworks = 200,
-            };
+            var subnetCalculatorInput = new SubnetCalculatorInput("10.200.0.0/13", 200);
 
-            var subnetCalculator = new SubnetCalculatorEngine.Services.SubnetCalculatorEngine();
-
-            var subnetCalculatorResult = subnetCalculator.CalculateSubnet(subnetCalculatorInput);
+            var subnetCalculatorResult = GetSubnetCalculatorResult(subnetCalculatorInput);
 
             Assert.IsTrue(subnetCalculatorResult.NumberOfExtraBitsRequired == 8);
             Assert.IsTrue(subnetCalculatorResult.NumberOfNetworksProvided == 256);
@@ -202,7 +184,7 @@ namespace SubnetCalculator.UnitTests
             Assert.IsTrue(subnetCalculatorResult.FirstUsableWithNetworkMaskIPAddress == "10.200.0.1/21");
             Assert.IsTrue(subnetCalculatorResult.LastUsableWithNetworkMaskIPAddress == "10.207.255.254/21");
 
-            Assert.IsTrue(subnetCalculatorResult.Networks.Count == 256);
+            Assert.IsTrue(subnetCalculatorResult.Networks.Count == subnetCalculatorResult.NumberOfNetworksProvided);
 
             var networks = subnetCalculatorResult.Networks.ToArray();
 
@@ -233,6 +215,46 @@ namespace SubnetCalculator.UnitTests
             Assert.IsTrue(network199.BroadcastAddress == "10.206.63.255/21");
             Assert.IsTrue(network199.FirstUsableIPAddress == "10.206.56.1/21");
             Assert.IsTrue(network199.LastUsableIPAddress == "10.206.63.254/21");
+        }
+
+        [TestMethod]
+        public void SubnetIPv4Test4()
+        {
+            var subnetCalculatorInput = new SubnetCalculatorInput("192.168.224.0/21", 50);
+
+            var subnetCalculatorResult = GetSubnetCalculatorResult(subnetCalculatorInput);
+        }
+
+        [TestMethod]
+        public void SubnetIPv4Test5()
+        {
+            var subnetCalculatorInput = new SubnetCalculatorInput("172.16.128.0/17", 30);
+
+            var subnetCalculatorResult = GetSubnetCalculatorResult(subnetCalculatorInput);
+        }
+
+        [TestMethod]
+        public void SubnetIPv4Test6()
+        {
+            var subnetCalculatorInput = new SubnetCalculatorInput("172.17.20.0/22", 17);
+
+            var subnetCalculatorResult = GetSubnetCalculatorResult(subnetCalculatorInput);
+        }
+
+        [TestMethod]
+        public void SubnetIPv4Test7()
+        {
+            var subnetCalculatorInput = new SubnetCalculatorInput("172.31.96.0/19", 300);
+
+            var subnetCalculatorResult = GetSubnetCalculatorResult(subnetCalculatorInput);
+
+        }
+
+        private SubnetCalculatorResult GetSubnetCalculatorResult(SubnetCalculatorInput subnetCalculatorInput)
+        {
+            var subnetCalculator = new SubnetCalculatorEngine.Services.SubnetCalculatorEngine();
+
+            return subnetCalculator.CalculateSubnet(subnetCalculatorInput);
         }
     }
 }

@@ -179,7 +179,9 @@
 
         @if (subnetCalculatorResult.Networks.Count > 0)
         {
-            <table id="tblNetworks">
+            <h3>All @subnetCalculatorResult.Networks.Count of the possible /@subnetCalculatorResult.NetworkMask networks</h3>
+            
+            <table id="tblNetworks" style="margin-top: 25px;">
                 <tr>
                     <th>Network Number</th>
                     <th>Network IP Address</th>

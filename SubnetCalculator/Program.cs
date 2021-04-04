@@ -40,11 +40,7 @@ namespace SubnetCalculator
                 validNumberOfNetworks = int.TryParse(Console.ReadLine(), out numberfNetworks);
             }
 
-            var subnetCalculatorInput = new SubnetCalculatorInput()
-            {
-                IPAddress = IPAddress,//"192.168.224.0/21",
-                NumberOfNetworks = numberfNetworks, //512 //Example from https://app.pluralsight.com/course-player?clipId=67cc4d0a-7ddf-46f3-86ee-2fb6efc55e9d
-            };
+            var subnetCalculatorInput = new SubnetCalculatorInput(IPAddress, numberfNetworks);
 
             var subnetCalculator = new SubnetCalculatorEngine.Services.SubnetCalculatorEngine();
 

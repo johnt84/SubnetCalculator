@@ -206,6 +206,7 @@ namespace SubnetCalculatorEngine.Services
                 NumberOfUsableHosts = numberOfUsableHosts,
                 IPType = IPInformation.IPType,
                 IPClass = IPInformation.IPClass,
+                NetworkMask = networkMask,
                 NetworkSubnetMaskInBinary = networkSubnetMaskInBinary,
                 NetworkSubnetMaskIPAddress = networkSubnetMaskIPAddressWithMask,
                 NetworkWithNetworkMaskAddressInBinary = networkAddressWithNetworkMaskInBinary,
