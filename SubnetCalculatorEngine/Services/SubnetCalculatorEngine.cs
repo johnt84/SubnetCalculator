@@ -183,6 +183,8 @@ namespace SubnetCalculatorEngine.Services
             var networks = GetNetworks(bitsCalculatorTableRecord, IPAddressInBinary, netMask, networkMask);
 
             var IPInformation = GetIPInformation(IPAddress);
+            
+             reverseArpaIPAddressResult.ReverseArpaHostName = string.Empty;
 
             return new SubnetCalculatorResult()
             {
