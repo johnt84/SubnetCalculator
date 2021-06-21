@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using SubnetCalculatorEngine.Models;
 
 namespace SubnetCalculatorBlazorWASM
 {
@@ -16,8 +15,7 @@ namespace SubnetCalculatorBlazorWASM
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
-            builder.Services.AddScoped<SubnetCalculatorInput>();
-            builder.Services.AddScoped<SubnetCalculatorEngine.Services.SubnetCalculatorEngine>();
+            builder.Services.AddSingleton<SubnetCalculatorEngine.Services.SubnetCalculatorEngine>();
 
             await builder.Build().RunAsync();
         }
