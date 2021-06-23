@@ -35,7 +35,8 @@ namespace SubnetCalculator.UnitTests
             Assert.IsTrue(subnetCalculatorResult.ReverseArpaHostName == "50.0.10.in-addr.arpa");
             Assert.IsTrue(subnetCalculatorResult.ReverseArpaIPAddresss == "0.50.0.10.in-addr.arpa");
             Assert.IsTrue(subnetCalculatorResult.IPType == IPType.Private);
-            Assert.IsTrue(subnetCalculatorResult.IPClass == IPClass.A);
+            Assert.IsTrue(subnetCalculatorResult.IPClass == IPClass.C);
+            Assert.IsTrue(subnetCalculatorResult.PrivateIPClass == IPClass.A);
 
             Assert.IsTrue(subnetCalculatorResult.NetworkSubnetMaskIPAddress == "255.255.255.240/28");
             Assert.IsTrue(subnetCalculatorResult.NetworkSubnetMaskInBinary == "11111111.11111111.11111111.11110000");
@@ -104,7 +105,8 @@ namespace SubnetCalculator.UnitTests
             Assert.IsTrue(subnetCalculatorResult.ReverseArpaHostName == "0.0.10.in-addr.arpa");
             Assert.IsTrue(subnetCalculatorResult.ReverseArpaIPAddresss == "0.0.0.10.in-addr.arpa");
             Assert.IsTrue(subnetCalculatorResult.IPType == IPType.Private);
-            Assert.IsTrue(subnetCalculatorResult.IPClass == IPClass.A);
+            Assert.IsTrue(subnetCalculatorResult.IPClass == IPClass.B);
+            Assert.IsTrue(subnetCalculatorResult.PrivateIPClass == IPClass.A);
 
             Assert.IsTrue(subnetCalculatorResult.NetworkSubnetMaskIPAddress == "255.255.255.128/25");
             Assert.IsTrue(subnetCalculatorResult.NetworkSubnetMaskInBinary == "11111111.11111111.11111111.10000000");
@@ -174,6 +176,7 @@ namespace SubnetCalculator.UnitTests
             Assert.IsTrue(subnetCalculatorResult.ReverseArpaIPAddresss == "0.0.200.10.in-addr.arpa");
             Assert.IsTrue(subnetCalculatorResult.IPType == IPType.Private);
             Assert.IsTrue(subnetCalculatorResult.IPClass == IPClass.A);
+            Assert.IsTrue(subnetCalculatorResult.PrivateIPClass == IPClass.A);
 
             Assert.IsTrue(subnetCalculatorResult.NetworkSubnetMaskIPAddress == "255.255.248.0/21");
             Assert.IsTrue(subnetCalculatorResult.NetworkSubnetMaskInBinary == "11111111.11111111.11111000.00000000");
@@ -242,7 +245,8 @@ namespace SubnetCalculator.UnitTests
             Assert.IsTrue(subnetCalculatorResult.ReverseArpaHostName == "224.168.192.in-addr.arpa");
             Assert.IsTrue(subnetCalculatorResult.ReverseArpaIPAddresss == "0.224.168.192.in-addr.arpa");
             Assert.IsTrue(subnetCalculatorResult.IPType == IPType.Private);
-            Assert.IsTrue(subnetCalculatorResult.IPClass == IPClass.C);
+            Assert.IsTrue(subnetCalculatorResult.IPClass == IPClass.B);
+            Assert.IsTrue(subnetCalculatorResult.PrivateIPClass == IPClass.C);
 
             Assert.IsTrue(subnetCalculatorResult.NetworkSubnetMaskIPAddress == "255.255.255.224/27");
             Assert.IsTrue(subnetCalculatorResult.NetworkSubnetMaskInBinary == "11111111.11111111.11111111.11100000");
@@ -312,6 +316,7 @@ namespace SubnetCalculator.UnitTests
             Assert.IsTrue(subnetCalculatorResult.ReverseArpaIPAddresss == "0.128.16.172.in-addr.arpa");
             Assert.IsTrue(subnetCalculatorResult.IPType == IPType.Private);
             Assert.IsTrue(subnetCalculatorResult.IPClass == IPClass.B);
+            Assert.IsTrue(subnetCalculatorResult.PrivateIPClass == IPClass.B);
 
             Assert.IsTrue(subnetCalculatorResult.NetworkSubnetMaskIPAddress == "255.255.252.0/22");
             Assert.IsTrue(subnetCalculatorResult.NetworkSubnetMaskInBinary == "11111111.11111111.11111100.00000000");
@@ -374,6 +379,7 @@ namespace SubnetCalculator.UnitTests
             Assert.IsTrue(subnetCalculatorResult.ReverseArpaIPAddresss == "0.20.17.172.in-addr.arpa");
             Assert.IsTrue(subnetCalculatorResult.IPType == IPType.Private);
             Assert.IsTrue(subnetCalculatorResult.IPClass == IPClass.B);
+            Assert.IsTrue(subnetCalculatorResult.PrivateIPClass == IPClass.B);
 
             Assert.IsTrue(subnetCalculatorResult.NetworkSubnetMaskIPAddress == "255.255.255.224/27");
             Assert.IsTrue(subnetCalculatorResult.NetworkSubnetMaskInBinary == "11111111.11111111.11111111.11100000");
@@ -450,6 +456,7 @@ namespace SubnetCalculator.UnitTests
             Assert.IsTrue(subnetCalculatorResult.ReverseArpaIPAddresss == "0.96.31.172.in-addr.arpa");
             Assert.IsTrue(subnetCalculatorResult.IPType == IPType.Private);
             Assert.IsTrue(subnetCalculatorResult.IPClass == IPClass.B);
+            Assert.IsTrue(subnetCalculatorResult.PrivateIPClass == IPClass.B);
 
             Assert.IsTrue(subnetCalculatorResult.NetworkSubnetMaskIPAddress == "255.255.255.240/28");
             Assert.IsTrue(subnetCalculatorResult.NetworkSubnetMaskInBinary == "11111111.11111111.11111111.11110000");

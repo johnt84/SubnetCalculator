@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using SubnetCalculatorEngine.Models;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -15,7 +16,8 @@ namespace SubnetCalculatorBlazorWASM
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
-            builder.Services.AddSingleton<SubnetCalculatorEngine.Services.SubnetCalculatorEngine>();
+            builder.Services.AddScoped<SubnetCalculatorInput>();
+            builder.Services.AddScoped<SubnetCalculatorEngine.Services.SubnetCalculatorEngine>();
 
             await builder.Build().RunAsync();
         }

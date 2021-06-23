@@ -1,5 +1,6 @@
 ﻿@page "/subnetcalculator/ipv4calculator"
 @using SubnetCalculatorEngine.Models
+@using SubnetCalculatorEngine.Models.Enums;
 @inject SubnetCalculatorEngine.Services.SubnetCalculatorEngine SubnetCalculator
 
 
@@ -23,7 +24,6 @@
 
     #tblSubnetCalculationWithNetowrkMaskResult {
         width: 655px;
-
     }
 
     #tblNetworks {
@@ -144,6 +144,13 @@
                     <td>@subnetCalculatorResult.IPClass.Value.ToString()</td>
                 </tr>
             }
+            @if (@isPrivateClassAvailable)
+            {
+                <tr>
+                    <td>Private IP Class:</td>
+                    <td>@subnetCalculatorResult.PrivateIPClass.Value.ToString()</td>
+                </tr>
+            }
         </table>
 
         <table id="tblSubnetCalculationWithNetowrkMaskResult">
@@ -180,7 +187,7 @@
         @if (subnetCalculatorResult.Networks.Count > 0)
         {
             <h3>All @subnetCalculatorResult.Networks.Count of the possible /@subnetCalculatorResult.NetworkMask networks</h3>
-            
+
             <table id="tblNetworks" style="margin-top: 25px;">
                 <tr>
                     <th>Network Number</th>
@@ -213,6 +220,9 @@
 
     private bool isSubnetCalculationError => subnetCalculatorResult != null
                                         && !string.IsNullOrEmpty(subnetCalculatorResult.ErrorMessage);
+
+    private bool isPrivateClassAvailable => subnetCalculatorResult.IPType == IPType.Private
+                                           && subnetCalculatorResult.PrivateIPClass.HasValue;
 
     protected override void OnInitialized()
     {
