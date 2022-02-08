@@ -6,4 +6,4 @@ Simple Subnet Calculator developed using Blazor which calculates the number of s
   * Blazor WASM with PWA/.Net 6 (Is what is currently deployed)
   * Blazor Server/.Net 6
 * Subnet Calculator engine is a Class Library project developed using .Net 6
-* Unit Test app which uses NUnit in .Net 6 (uses sceanrios from Network Layer Addressing and Subnetting Pluralsight course at https://app.pluralsight.com/course-player?clipId=57524c33-f76e-45ad-b8c4-2d9d3a1ffded)
+* Unit Test app which uses MSTest in .Net 6 (uses sceanrios from Network Layer Addressing and Subnetting Pluralsight course at https://app.pluralsight.com/course-player?clipId=57524c33-f76e-45ad-b8c4-2d9d3a1ffded).  These unit tests are run as part of the GitHub Action when any change occurs in the Blazor WASM GUI project to ensure the Subnet Calcualtor enngine and Blazor WASM GUI project provide the expected results
